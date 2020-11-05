@@ -8,7 +8,7 @@ laptops.push(
     "kompak.jpg"
   ), new Laptop(
     "IBN AWD K2",
-    8611,
+    2311,
     "Comes with built in protection if dropped on the ground. Just make sure it's your own laptop you drop.",
     "It's a beast from every perspective, even when it comes to weight and sound!",
     "pc.jpg"
