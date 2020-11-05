@@ -23,6 +23,8 @@ for (const laptop of laptops) {
 }
 
 // Event Listeners
+
+// alter content when changing laptop from the dropdown
 laptopsDropdown.addEventListener('change', () => {
   selectedLaptop = getSelectedLaptop()
 
@@ -55,6 +57,7 @@ document.querySelector('#bankButton').addEventListener('click', () => {
 
 document.querySelector('#loanForm').addEventListener('submit', e => {
   e.preventDefault()
+  // action for take loan form
 
   let amount = loanForm.querySelector('#loanAmount').value
   amount = parseInt(amount)
@@ -70,8 +73,7 @@ document.querySelector('#loanForm').addEventListener('submit', e => {
     changeBankBalance(amount)
     pageAlert('Loan of ' + amount + ' kr granted', alertTypes.success)
     hideLoanDialogue()
-    hasLoan = true
-    setLoanIconActive(hasLoan)
+    setLoanActive(true)
   }
 })
 
@@ -82,13 +84,13 @@ document.querySelector('#purchaseButton').addEventListener('click', () => {
     pageAlert('You have unsufficient funds to purchase this laptop', alertTypes.error)
   } else {
     changeBankBalance(-selectedLaptop.price)
-    hasLoan = false
-    setLoanIconActive(hasLoan)
+    setLoanActive(false)
     pageAlert(selectedLaptop.name + ' purchased. Also there were a clerical error at the bank, which means details about your loan has vanished!', alertTypes.success)
   }
 })
 
 $('#loanAmountDialogue').on('show.bs.modal', () => {
+  // Loan dialogue
   const inputField = loanAmountDialogue.querySelector('input')
   //reset dialogue
   dialogueAlert('')
@@ -138,8 +140,10 @@ const hideLoanDialogue = () => {
   $('#loanAmountDialogue').modal('hide')
 }
 
-const setLoanIconActive = active => {
-  if(active) {
+const setLoanActive = status => {
+  hasLoan = status
+
+  if(status) {
     loanIcon.classList.remove('d-none')
   } else {
     loanIcon.classList.add('d-none')
