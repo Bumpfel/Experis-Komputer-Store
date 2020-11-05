@@ -14,26 +14,29 @@
 <body>
   <header class="bg-secondary">
     <div class="col p-2 pl-5 text-white">Komputer Store</div>
-  </header> 
+  </header>
 
   <main class="container">
+    <!-- Alerts -->
     <div id="alertContainer"></div>
 
+    <!-- Bank -->
     <div class="card-group">
       <div class="card border-0">
         <div class="card-body">
           <h5 class="card-title">Joe Banker</h5>
           <div class="card-text row">
-            <i class="fa fa-money d-none" id="loanIcon"></i>
+            <i class="fa fa-money d-none" id="loanIcon" title="You have an active loan"></i>
             <div class="col">Balance</div>
             <div class="col" id="bankBalance">0 kr</div>
           </div>
           <div class="pl-0 p-2">
           </div>
-          <a class="btn btn-primary" data-toggle="modal" data-target="#loanAmountDialogue">Get a loan</a>
+          <a class="btn btn-primary" id="getLoanButton">Get a loan</a>
         </div>
       </div>
 
+      <!-- Work -->
       <div class="card border-0 ">
         <div class="card-body">
           <h5 class="card-title">Work</h5>
@@ -46,6 +49,7 @@
         </div>
       </div>
 
+      <!-- Laptops -->
       <div class="card border-0 ">
         <div class="card-body">
           <h5 class="card-title">Laptops</h5>
@@ -98,7 +102,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Take loan</button>
+          <button type="submit" class="btn btn-primary" id="takeLoanButton">Take loan</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>

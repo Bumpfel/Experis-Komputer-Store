@@ -1,6 +1,6 @@
 import { laptops } from './laptops.js'
 
-// Declarations
+// Vars and constans
 let bankBalance = 0, payBalance = 0, hasLoan = false, selectedLaptop
 
 const alertTypes = { info: 'alert-info', success: 'alert-success', error: 'alert-danger' }
@@ -10,14 +10,7 @@ const alertContainer = document.querySelector('#alertContainer')
 const bankBalanceContainer = document.querySelector('#bankBalance')
 const payBalanceContainer = document.querySelector('#payBalance')
 const loanIcon = document.querySelector('#loanIcon')
-
 const selectedProductCard = document.querySelector('#selectedProduct')
-const selectedProductFeatures = document.querySelector('#features')
-const selectedProductImg = selectedProductCard.querySelector('img')
-const selectedProductTitle = selectedProductCard.querySelector('#title')
-const selectedProductDescription = selectedProductCard.querySelector('#description')
-const selectedProductPrice = selectedProductCard.querySelector('#price')
-
 const loanAmountDialogue = document.querySelector('#loanAmountDialogue')
 const dialogueInfoMessage = loanAmountDialogue.querySelector('#infoMessage')
 const dialogueErrMessage = loanAmountDialogue.querySelector('#errMessage')
@@ -30,15 +23,25 @@ for (const laptop of laptops) {
 }
 
 // Event Listeners
+
+// alter content when changing laptop from the dropdown
 laptopsDropdown.addEventListener('change', () => {
   selectedLaptop = getSelectedLaptop()
 
   selectedProductCard.classList.remove('d-none')
-  selectedProductFeatures.innerText = selectedLaptop.features
-  selectedProductImg.src = 'assets/' + selectedLaptop.img
-  selectedProductTitle.innerText = selectedLaptop.name
-  selectedProductDescription.innerText = selectedLaptop.description
-  selectedProductPrice.innerText = selectedLaptop.price + ' SEK'
+  document.querySelector('#features').innerText = selectedLaptop.features
+  selectedProductCard.querySelector('img').src = 'assets/' + selectedLaptop.img
+  selectedProductCard.querySelector('#title').innerText = selectedLaptop.name
+  selectedProductCard.querySelector('#description').innerText = selectedLaptop.description
+  selectedProductCard.querySelector('#price').innerText = selectedLaptop.price + ' SEK'
+})
+
+document.querySelector('#getLoanButton').addEventListener('click', () => {
+  if(hasLoan) {
+    pageAlert('You already have an outstanding loan', alertTypes.info)
+  } else {
+    $('#loanAmountDialogue').modal('show')
+  }
 })
 
 document.querySelector('#workButton').addEventListener('click', () => {
@@ -54,6 +57,7 @@ document.querySelector('#bankButton').addEventListener('click', () => {
 
 document.querySelector('#loanForm').addEventListener('submit', e => {
   e.preventDefault()
+  // action for take loan form
 
   let amount = loanForm.querySelector('#loanAmount').value
   amount = parseInt(amount)
@@ -69,8 +73,7 @@ document.querySelector('#loanForm').addEventListener('submit', e => {
     changeBankBalance(amount)
     pageAlert('Loan of ' + amount + ' kr granted', alertTypes.success)
     hideLoanDialogue()
-    hasLoan = true
-    setLoanIconActive(hasLoan)
+    setLoanActive(true)
   }
 })
 
@@ -81,19 +84,19 @@ document.querySelector('#purchaseButton').addEventListener('click', () => {
     pageAlert('You have unsufficient funds to purchase this laptop', alertTypes.error)
   } else {
     changeBankBalance(-selectedLaptop.price)
-    hasLoan = false
-    setLoanIconActive(hasLoan)
-    pageAlert(selectedLaptop.name + ' purchased', alertTypes.success)
+    setLoanActive(false)
+    pageAlert(selectedLaptop.name + ' purchased. Also there were a clerical error at the bank, which means details about your loan has vanished!', alertTypes.success)
   }
 })
 
 $('#loanAmountDialogue').on('show.bs.modal', () => {
+  // Loan dialogue
   const inputField = loanAmountDialogue.querySelector('input')
   //reset dialogue
   dialogueAlert('')
-
+  inputField.value = ''
+  
   if(hasLoan) {
-    inputField.value = ''
     inputField.setAttribute('disabled', '')
     dialogueInfoMessage.innerText = 'You cannot take a new loan at this moment'
   } else {
@@ -101,7 +104,7 @@ $('#loanAmountDialogue').on('show.bs.modal', () => {
     const max = 2 * bankBalance
     
     inputField.setAttribute('max', max)
-    dialogueInfoMessage.innerHTML = `Maximum amount you can borrow is <a href="#">${max}</a> kr`
+    dialogueInfoMessage.innerHTML = `The maximum amount you can borrow is <a href="#">${max}</a> kr`
     dialogueInfoMessage.querySelector('a').addEventListener('click', () => inputField.value = max)
   }
 })
@@ -137,8 +140,10 @@ const hideLoanDialogue = () => {
   $('#loanAmountDialogue').modal('hide')
 }
 
-const setLoanIconActive = active => {
-  if(active) {
+const setLoanActive = status => {
+  hasLoan = status
+
+  if(status) {
     loanIcon.classList.remove('d-none')
   } else {
     loanIcon.classList.add('d-none')
