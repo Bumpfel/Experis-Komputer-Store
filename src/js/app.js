@@ -1,15 +1,17 @@
 import { laptops } from './laptops.js'
 
 // Vars and constans
-let bankBalance = 0, payBalance = 0, hasLoan = false, selectedLaptop
+let bankBalance = 0, currentDebt = 0, payBalance = 0, selectedLaptop, hasLoan = () => currentDebt > 0
+const bankInterest = .08
 
 const alertTypes = { info: 'alert-info', success: 'alert-success', error: 'alert-danger' }
 
 const alertContainer = document.querySelector('#alertContainer')
 
+const currentDebtContainer = document.querySelector('#currentDebt')
+const payDebtButton = document.querySelector('#payDebtButton')
 const bankBalanceContainer = document.querySelector('#bankBalance')
 const payBalanceContainer = document.querySelector('#payBalance')
-const loanIcon = document.querySelector('#loanIcon')
 const selectedProductCard = document.querySelector('#selectedProduct')
 const loanAmountDialogue = document.querySelector('#loanAmountDialogue')
 const dialogueInfoMessage = loanAmountDialogue.querySelector('#infoMessage')
@@ -37,32 +39,42 @@ laptopsDropdown.addEventListener('change', () => {
 })
 
 document.querySelector('#getLoanButton').addEventListener('click', () => {
-  if(hasLoan) {
+  if(hasLoan()) {
     pageAlert('You already have an outstanding loan', alertTypes.info)
   } else {
     $('#loanAmountDialogue').modal('show')
   }
 })
 
+
+// pay debt
+payDebtButton.addEventListener('click', () => {
+  const prevBankBalance = bankBalance  
+  setBankBalance(Math.max(bankBalance - currentDebt, 0))
+  setDebt(Math.max(currentDebt - prevBankBalance, 0))
+})
+
+// "work"
 document.querySelector('#workButton').addEventListener('click', () => {
   payBalance += 100
   payBalanceContainer.innerText = payBalance + ' kr'
 })
 
+// deposit
 document.querySelector('#bankButton').addEventListener('click', () => {
-  changeBankBalance(payBalance)
+  setBankBalance(bankBalance + payBalance , 0)
   payBalance = 0
   payBalanceContainer.innerText = payBalance + ' kr'
 })
 
+// get a loan
 document.querySelector('#loanForm').addEventListener('submit', e => {
   e.preventDefault()
-  // action for take loan form
 
   let amount = loanForm.querySelector('#loanAmount').value
   amount = parseInt(amount)
 
-  if (hasLoan) {
+  if (hasLoan()) {
     pageAlert('You already have an outstanding loan', alertTypes.info)
     hideLoanDialogue()
   } else if (isNaN(amount) || amount <= 0) {
@@ -70,33 +82,33 @@ document.querySelector('#loanForm').addEventListener('submit', e => {
   } else if (amount > bankBalance * 2) {
     dialogueAlert('You do not have sufficient funds to get this loan', alertTypes.error)
   } else {
-    changeBankBalance(amount)
-    pageAlert('Loan of ' + amount + ' kr granted', alertTypes.success)
+    setDebt(currentDebt + amount * (1 + bankInterest))
+    setBankBalance(bankBalance + amount)
     hideLoanDialogue()
-    setLoanActive(true)
+    pageAlert('Loan of ' + amount + ' kr granted', alertTypes.success)
   }
 })
 
+// buy now
 document.querySelector('#purchaseButton').addEventListener('click', () => {
   const selectedLaptop = getSelectedLaptop()
 
   if (selectedLaptop.price > bankBalance) {
     pageAlert('You have unsufficient funds to purchase this laptop', alertTypes.error)
   } else {
-    changeBankBalance(-selectedLaptop.price)
-    setLoanActive(false)
-    pageAlert(selectedLaptop.name + ' purchased. Also there were a clerical error at the bank, which means details about your loan has vanished!', alertTypes.success)
+    setBankBalance(bankBalance - selectedLaptop.price)
+    pageAlert(selectedLaptop.name + ' purchased', alertTypes.success)
   }
 })
 
+// Loan dialogue triggered
 $('#loanAmountDialogue').on('show.bs.modal', () => {
-  // Loan dialogue
   const inputField = loanAmountDialogue.querySelector('input')
   //reset dialogue
   dialogueAlert('')
   inputField.value = ''
   
-  if(hasLoan) {
+  if(hasLoan()) {
     inputField.setAttribute('disabled', '')
     dialogueInfoMessage.innerText = 'You cannot take a new loan at this moment'
   } else {
@@ -104,20 +116,16 @@ $('#loanAmountDialogue').on('show.bs.modal', () => {
     const max = 2 * bankBalance
     
     inputField.setAttribute('max', max)
-    dialogueInfoMessage.innerHTML = `The maximum amount you can borrow is <a href="#">${max}</a> kr`
+    dialogueInfoMessage.innerHTML = `The maximum amount you can borrow is <a href="#">${max}</a> kr (to an interest of ${Math.round(bankInterest * 100)}%)`
     dialogueInfoMessage.querySelector('a').addEventListener('click', () => inputField.value = max)
   }
 })
 
 
 // Functions
+
 const getSelectedLaptop = () => {
   return laptops.find(item => item.name === laptopsDropdown.value)
-}
-
-const changeBankBalance = amount => {
-  bankBalance += amount
-  bankBalanceContainer.innerText = bankBalance + ' kr'
 }
 
 const pageAlert = (msg, alertType) => {
@@ -132,6 +140,7 @@ const pageAlert = (msg, alertType) => {
   alertContainer.innerHTML = alert
 }
 
+// message within the dialogue
 const dialogueAlert = msg => {
   dialogueErrMessage.innerText = msg
 }
@@ -140,12 +149,17 @@ const hideLoanDialogue = () => {
   $('#loanAmountDialogue').modal('hide')
 }
 
-const setLoanActive = status => {
-  hasLoan = status
+const setBankBalance = amount => {
+  bankBalance = Math.round(amount)
+  bankBalanceContainer.innerText = bankBalance + ' kr'
+}
 
-  if(status) {
-    loanIcon.classList.remove('d-none')
+const setDebt = amount => {
+  currentDebt = Math.round(amount)
+  if(currentDebt === 0) {
+    payDebtButton.classList.add('d-none')
   } else {
-    loanIcon.classList.add('d-none')
+    payDebtButton.classList.remove('d-none')
   }
+  currentDebtContainer.innerText = currentDebt + ' kr' 
 }

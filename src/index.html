@@ -26,13 +26,17 @@
         <div class="card-body">
           <h5 class="card-title">Joe Banker</h5>
           <div class="card-text row">
-            <i class="fa fa-money d-none" id="loanIcon" title="You have an active loan"></i>
-            <div class="col">Balance</div>
+            <div class="col">Account Balance</div>
             <div class="col" id="bankBalance">0 kr</div>
+          </div>
+          <div class="card-text row">
+            <div class="col">Debt to bank</div>
+            <div class="col" id="currentDebt">0 kr</div>
           </div>
           <div class="pl-0 p-2">
           </div>
           <a class="btn btn-primary" id="getLoanButton">Get a loan</a>
+          <a class="btn btn-warning d-none" id="payDebtButton">Pay off debt</a>
         </div>
       </div>
 
@@ -44,7 +48,7 @@
             <div class="col">Pay</div>
             <div class="col" id="payBalance">0 kr</div>
           </div>
-          <a class="btn btn-warning" id="bankButton">Bank</a>
+          <a class="btn btn-warning" id="bankButton">Deposit</a>
           <a class="btn btn-primary" id="workButton">Work</a>
         </div>
       </div>
