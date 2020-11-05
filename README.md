@@ -2,15 +2,14 @@
 This application is built in basic javascript, bootstrap, html and css. Task as per [instructions](Instructions.pdf).
 
 # How to use
-Click the work button to 'work' and get paid. Transfer these funds to your bank by clicking the bank button.
+Click the work button to 'work' and get paid. Transfer these funds to your bank account by clicking the 'Deposit' button.
 
 ![app-screenshot](screenshot.png)
 
-You can take out one loan from the bank up to a maximum of twice your bank balance.
+You can borrow money from the bank up to a maximum of twice your bank balance, as long as you don't have any outstanding debt already.
 
 Select a laptop from the dropdown on the right to bring out a description of the item.
-You can also purchase the item if you have sufficient funds in your bank account by clicking the 'BUY NOW' button. 
-When you have purchased an item, your bank loan will have been forgotten, and you can take a new loan if you want.
+You can purchase the item if you have sufficient funds in your bank account. 
 
 # Requirements to run
 * A web development server
